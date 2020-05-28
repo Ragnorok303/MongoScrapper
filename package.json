@@ -18,9 +18,12 @@
   "homepage": "https://github.com/Ragnorok303/MongoScrapper#readme",
   "dependencies": {
     "axios": "^0.19.2",
+    "body": "^5.1.0",
+    "body-parser": "^1.19.0",
     "cheerio": "^1.0.0-rc.3",
     "express": "^4.17.1",
     "express-handlebars": "^4.0.4",
-    "mongoose": "^5.9.16"
+    "mongoose": "^5.9.16",
+    "parser": "^0.1.4"
   }
 }
