@@ -20,12 +20,12 @@ app.engine("handlebars", expressHandlebars({
 app.set("view engine", "handlebars");
 
 app.use(bodyParser.urlencoded({
-    extended:false
+    extended: false
 }));
 
 app.use(router);
-// create db in mongo
-var db = process.env.MONGODB_URI || "mongodb:";
+
+var db = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
 
 mongoose.connect(db, function(error) {
  
