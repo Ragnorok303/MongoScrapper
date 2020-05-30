@@ -5,7 +5,7 @@ var logger = require("morgan");
 var axios = require("axios");
 var cheerio = require("cheerio");
 
-var db = require ("./models");
+var db = require("./models");
 
 var PORT = process.env.PORT || 3000;
 
@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost/headlinedb", { useNewUrlParser: true });
+mongoose.connect("mongodb://localhost/headlinedb", { useNewUrlParser: true, useUnifiedTopology: true });
 console.log("mongoose connection is successful");
 
 app.engine("handlebars", expressHandlebars({ defaultLayout: "main" }));
@@ -26,34 +26,28 @@ console.log("\n***********************************\n" +
   "Grabbing every thread name and link\n" +
   "from NYTIMES webdev board:" +
   "\n***********************************\n");
-app.get("/scrape", function (req, res) {
-  axios.get("https://www.nytimes.com").then(function (response) {
 
-    var $ = cheerio.load(response.data);
+axios.get("https://www.nytimes.com").then(function (response) {
 
-    $("article").each(function (i, element) {
+  var $ = cheerio.load(response.data);
 
-      var result = [];
+  var result = [];
 
-      result.title = $(this)
-        .children("a")
-        .text();
-      result.link = $(this)
-        .children("a")
-        .attr("href");
+  $("article").each(function (i, element) {
 
-      db.Headline.create(result)
-        .then(function (dbheadline) {
-          console.log(dbHeadline);
-        })
-        .catch(function (err) {
-          console.log(err);
-        });
+    var title = $(element).text();
+
+    var link = $(element).find("a").attr("href");
+
+    result.push({
+      title: title,
+      link: link
     });
-    res.send("Scrape Complete");
-    console.log(result);
+
   });
+  console.log(result);
 });
+
 
 app.get("/", function (req, res) {
   res.render("home");
@@ -63,80 +57,47 @@ app.get("/saved", function (req, res) {
   res.render("saved");
 });
 
-app.get("/api/fetch", function (req, res) {
-
-  headlinesController.fetch(function (err, docs) {
-
-    if (!docs || docs.insertedCount === 0) {
-      res.json({
-        message: "No new articles today. Check back tomorrow!"
-      });
-    }
-    else {
-
-      res.json({
-        message: "Added " + docs.insertedCount + " new articles!"
-      });
-    }
-  });
-});
-
 app.get("/api/headlines", function (req, res) {
-
-  headlinesController.get(req.query, function (data) {
-
+  (req.query, function (data) {
     res.json(data);
   });
 });
 
 app.delete("/api/headlines/:id", function (req, res) {
-
   var query = { _id: req.params.id };
-
-  headlinesController.delete(query, function (err, data) {
-
+  (query, function (err, data) {
     res.json(data);
   });
 });
 
 app.put("/api/headlines", function (req, res) {
-
-  headlinesController.update(req.body, function (err, data) {
-
+  (req.body, function (err, data) {
     res.json(data);
   });
 });
 
 app.get("/api/notes/", function (req, res) {
-
-  notesController.get({}, function (err, data) {
-
+  ({}, function (err, data) {
     res.json(data);
   });
 });
 
 app.get("/api/notes/:headline_id", function (req, res) {
   var query = { _id: req.params.headline_id };
-
-  notesController.get(query, function (err, data) {
-
+  (query, function (err, data) {
     res.json(data);
   });
 });
 
 app.delete("/api/notes/:id", function (req, res) {
   var query = { _id: req.params.id };
-
-  notesController.delete(query, function (err, data) {
-
+  (query, function (err, data) {
     res.json(data);
   });
 });
 
-
 app.post("/api/notes", function (req, res) {
-  notesController.save(req.body, function (data) {
-
+  (req.body, function (data) {
     res.json(data);
   });
 });
