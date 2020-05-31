@@ -10,7 +10,7 @@ $(document).ready(function () {
     function initPage() {
 
         articleContainer.empty();
-        $.get("/api/headlines?saved=true").then(function (data) {
+        $.get("/headlines?saved=true").then(function (data) {
 
             if (data && data.length) {
                 renderArticles(data);
