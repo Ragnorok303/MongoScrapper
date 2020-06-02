@@ -5,11 +5,15 @@ var Schema = mongoose.Schema;
 var HeadlineSchema = new Schema({
   title: {
     type: String,
-    // required: false
+    required: false
   },
   link: {
     type: String,
-    // required: false
+    required: false
+  },
+  summary: {
+    type: String,
+    required: false
   },
   note: {
     type: Schema.Types.ObjectId,

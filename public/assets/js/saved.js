@@ -11,18 +11,16 @@ $(document).ready(function () {
 
         articleContainer.empty();
         $.get("/headlines?saved=true").then(function (data) {
-
             if (data && data.length) {
-                renderArticles(data);
+                savedArticles(data);
             }
             else {
-
                 renderEmpty();
             }
         });
     }
 
-    function renderArticles(articles) {
+    function savedArticles(articles) {
 
         var articlePanels = [];
         for (var i = 0; i < articles.length; i++) {
@@ -32,7 +30,6 @@ $(document).ready(function () {
     }
 
     function createPanel(article) {
-
         var panel = $(
             [
                 "<div class='panel panel-default'>",
@@ -53,9 +50,7 @@ $(document).ready(function () {
                 "</div>"
             ].join("")
         );
-
         panel.data("_id", article._id);
-
         return panel;
     }
 
@@ -81,18 +76,14 @@ $(document).ready(function () {
     }
 
     function renderNotesList(data) {
-
         var notesToRender = [];
         var currentNote;
         if (!data.notes.length) {
-
             currentNote = ["<li class='list-group-item'>", "No notes for this article yet.", "</li>"].join("");
             notesToRender.push(currentNote);
         }
         else {
-
             for (var i = 0; i < data.notes.length; i++) {
-
                 currentNote = $(
                     [
                         "<li class='list-group-item note'>",
@@ -101,25 +92,19 @@ $(document).ready(function () {
                         "</li>"
                     ].join("")
                 );
-
                 currentNote.children("button").data("_id", data.notes[i]._id);
-
                 notesToRender.push(currentNote);
             }
         }
-
         $(".note-container").append(notesToRender);
     }
 
     function handleArticleDelete() {
-
         var articleToDelete = $(this).parents(".panel").data();
-
         $.ajax({
             method: "DELETE",
-            url: "/headlines/:id" + articleToDelete._id
+            url: "/headlines" + articleToDelete._id
         }).then(function (data) {
-
             if (data.ok) {
                 initPage();
             }
@@ -127,11 +112,8 @@ $(document).ready(function () {
     }
 
     function handleArticleNotes() {
-
         var currentArticle = $(this).parents(".panel").data();
-
         $.get("/headlines/:id" + currentArticle._id).then(function (data) {
-
             var modalText = [
                 "<div class='container-fluid text-center'>",
                 "<h4>Notes For Article: ",
@@ -144,7 +126,6 @@ $(document).ready(function () {
                 "<button class='btn btn-success save'>Save Note</button>",
                 "</div>"
             ].join("");
-
             bootbox.dialog({
                 message: modalText,
                 closeButton: true
@@ -153,21 +134,17 @@ $(document).ready(function () {
                 _id: currentArticle._id,
                 notes: data || []
             };
-
-            $(".btn.save").data("article", noteData);
-
+            $(".btn.save").data("headline", noteData);
             renderNotesList(noteData);
         });
     }
 
     function handleNoteSave() {
-
         var noteData;
         var newNote = $(".bootbox-body textarea").val().trim();
-
         if (newNote) {
             noteData = {
-                _id: $(this).data("article")._id,
+                _id: $(this).data("headline")._id,
                 noteText: newNote
             };
             $.post("/headlines/:id", noteData).then(function () {
@@ -178,14 +155,11 @@ $(document).ready(function () {
     }
 
     function handleNoteDelete() {
-
         var noteToDelete = $(this).data("_id");
-
         $.ajax({
-            url: "headlines/:id" + noteToDelete,
+            url: "headlines" + noteToDelete,
             method: "DELETE"
         }).then(function () {
-
             bootbox.hideAll();
         });
     }

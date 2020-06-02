@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost/Headline", { useNewUrlParser: true , useUnifiedTopology: true });
+mongoose.connect("mongodb://localhost/Headline", { useNewUrlParser: true});
 console.log("mongoose connection is successful");
 
 app.engine("handlebars", expressHandlebars({ defaultLayout: "main" }));
@@ -41,6 +41,9 @@ app.get("/scrape", function (req, res) {
       result.link = $(this)
         .find("a")
         .attr("href");
+      result.summary = $(this)
+        .find("p")
+        .text();
 
       db.Headline.create(result)
         .then(function (dbHeadline) {
@@ -95,21 +98,22 @@ app.get("/headlines/:id", function (req, res) {
     });
 });
 
-app.post("/headlines/:id", function (req, res) {
+app.post("/headlines/:id", function(req, res) {
   db.Note.create(req.body)
-    .then(function (dbNote) {
-      return db.Headline.findOneAndUpdate({ _id: req.params.id }, { note: dbNote._id }, { new: true });
-    })
-    .then(function (dbHeadline) {
-      res.json(dbHeadline);
-    })
-    .catch(function (err) {
-      res.json(err);
-    });
+    .then( dbNote => db.Headline.findOneAndUpdate(
+            {_id:req.params.id},
+            {$push:{note:dbNote._id}})    
+    )
+    .then(dbHeadline => res.json(dbHeadline))
+    .catch( err => res.json(500, err))  
 });
 
 app.put("/headlines/:id", function (req, res) {
-
+  db.Headline.update()
+    .then(dbHeadline => db.headline.findOneAndUpdate(
+      { _id: req.params.id }, { $set: { saved: true } })
+      .then(dbHeadline => res.json(dbHeadline))
+      .catch(err => res.json(500, err)));
 });
 
 app.listen(PORT, function () {

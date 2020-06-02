@@ -7,7 +7,7 @@ $(document).ready(function () {
 
     function initPage() {
         articleContainer.empty();
-        $.get("/headlines").then(function (data) {
+        $.get("/headlines?saved=false").then(function (data) {
             if (data && data.length) {
                 renderArticles(data);
             }
@@ -41,6 +41,7 @@ $(document).ready(function () {
                 "</h3>",
                 "</div>",
                 "<div class='panel-body'>",
+                article.summary,
                 "</div>",
                 "</div>"
             ].join("")
@@ -75,7 +76,7 @@ $(document).ready(function () {
         console.log(articleToSave)
         $.ajax({
             method: "PUT",
-            url: "/headlines/"+ articleToSave._id,
+            url: "/headlines/:id"+ articleToSave._id,
             data: articleToSave
         }).then(function (data) {
 
