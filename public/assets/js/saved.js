@@ -38,8 +38,8 @@ $(document).ready(function () {
                 "<div class='panel panel-default'>",
                 "<div class='panel-heading'>",
                 "<h3>",
-                "<a class='article-link' target='_blank' href='" + article.url + "'>",
-                article.headline,
+                "<a class='article-link' target='_blank' href='" + article.link + "'>",
+                article.title,
                 "</a>",
                 "<a class='btn btn-info delete'>",
                 "Delete From Saved",
@@ -117,7 +117,7 @@ $(document).ready(function () {
 
         $.ajax({
             method: "DELETE",
-            url: "/api/headlines/" + articleToDelete._id
+            url: "/headlines/:id" + articleToDelete._id
         }).then(function (data) {
 
             if (data.ok) {
@@ -130,7 +130,7 @@ $(document).ready(function () {
 
         var currentArticle = $(this).parents(".panel").data();
 
-        $.get("/api/notes/" + currentArticle._id).then(function (data) {
+        $.get("/headlines/:id" + currentArticle._id).then(function (data) {
 
             var modalText = [
                 "<div class='container-fluid text-center'>",
@@ -170,7 +170,7 @@ $(document).ready(function () {
                 _id: $(this).data("article")._id,
                 noteText: newNote
             };
-            $.post("/api/notes", noteData).then(function () {
+            $.post("/headlines/:id", noteData).then(function () {
 
                 bootbox.hideAll();
             });
@@ -182,7 +182,7 @@ $(document).ready(function () {
         var noteToDelete = $(this).data("_id");
 
         $.ajax({
-            url: "/api/notes/" + noteToDelete,
+            url: "headlines/:id" + noteToDelete,
             method: "DELETE"
         }).then(function () {
 

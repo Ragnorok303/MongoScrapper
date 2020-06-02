@@ -23,6 +23,7 @@ $(document).ready(function () {
             articlePanels.push(createPanel(articles[i]));
         }
         articleContainer.append(articlePanels);
+        console.log()
     }
 
     function createPanel(article) {
@@ -31,8 +32,8 @@ $(document).ready(function () {
                 "<div class='panel panel-default'>",
                 "<div class='panel-heading'>",
                 "<h3>",
-                "<a class='article-link' target='_blank' href='" + article.url + "'>",
-                article.headline,
+                "<a class='article-link' target='_blank' href=https://www.nytimes.com" + article.link + ">",
+                article.title,
                 "</a>",
                 "<a class='btn btn-info save'>",
                 "Save Article",
@@ -40,7 +41,6 @@ $(document).ready(function () {
                 "</h3>",
                 "</div>",
                 "<div class='panel-body'>",
-                article.summary,
                 "</div>",
                 "</div>"
             ].join("")
@@ -72,9 +72,10 @@ $(document).ready(function () {
     function handleArticleSave() {
         var articleToSave = $(this).parents(".panel").data();
         articleToSave.saved = true;
+        console.log(articleToSave)
         $.ajax({
             method: "PUT",
-            url: "/headlines",
+            url: "/headlines/"+ articleToSave._id,
             data: articleToSave
         }).then(function (data) {
 
@@ -85,10 +86,17 @@ $(document).ready(function () {
     }
 
     function handleArticleScrape() {
-
-        $.get("/scrape").then(function (data) {
+        $.getJSON("/scrape").then(function (data) {
             initPage();
             bootbox.alert("<h3 class='text-center m-top-80'>" + data.message + "<h3>");
         });
     }
+
+    // $.getJSON("/headlines", function (data) {
+    //     // For each one
+    //     for (var i = 0; i < data.length; i++) {
+    //         // Display the apropos information on the page
+    //         $("#article-container").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
+    //     }
+    // });
 });

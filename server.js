@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost/Headline", { useNewUrlParser: true });
+mongoose.connect("mongodb://localhost/Headline", { useNewUrlParser: true , useUnifiedTopology: true });
 console.log("mongoose connection is successful");
 
 app.engine("handlebars", expressHandlebars({ defaultLayout: "main" }));
@@ -27,26 +27,6 @@ console.log("\n***********************************\n" +
   "from NYTIMES webdev board:" +
   "\n***********************************\n");
 
-// axios.get("https://www.nytimes.com").then(function (response) {
-
-//   var $ = cheerio.load(response.data);
-
-//   var result = [];
-
-//   $("Headline").each(function (i, element) {
-
-//     var title = $(element).text();
-
-//     var link = $(element).find("a").attr("href");
-
-//     result.push({
-//       title: title,
-//       link: link
-//     });
-
-//   });
-//   console.log(result);
-// });
 app.get("/scrape", function (req, res) {
   axios.get("https://www.nytimes.com").then(function (response) {
 
@@ -57,7 +37,6 @@ app.get("/scrape", function (req, res) {
       var result = {};
 
       result.title = $(this)
-        // .children("a")
         .text();
       result.link = $(this)
         .find("a")
@@ -72,7 +51,6 @@ app.get("/scrape", function (req, res) {
         });
     });
     res.send("Scrape Complete");
-    console.log(result);
   });
 });
 
@@ -86,10 +64,20 @@ app.get("/saved", function (req, res) {
   res.render("saved");
 });
 
+// app.get("/headlines", function (req, res) {
+//   db.Headline.find({})
+//     .then(function (dbHeadline) {
+//       res.json(dbHeadline);
+//     })
+//     .catch(function (err) {
+//       res.json(err);
+//     });
+// });
+
 app.get("/headlines", function (req, res) {
   db.Headline.find({})
     .then(function (dbHeadline) {
-      res.json(dbHeadline);
+      res.send(dbHeadline);
     })
     .catch(function (err) {
       res.json(err);
@@ -118,6 +106,10 @@ app.post("/headlines/:id", function (req, res) {
     .catch(function (err) {
       res.json(err);
     });
+});
+
+app.put("/headlines/:id", function (req, res) {
+
 });
 
 app.listen(PORT, function () {
