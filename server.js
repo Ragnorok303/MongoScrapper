@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost/Headline", { useNewUrlParser: true});
+mongoose.connect( process.env.MONGODB_URI ||"mongodb://localhost/Headline", { useNewUrlParser: true});
 console.log("mongoose connection is successful");
 
 app.engine("handlebars", expressHandlebars({ defaultLayout: "main" }));
@@ -67,15 +67,15 @@ app.get("/saved", function (req, res) {
   res.render("saved");
 });
 
-// app.get("/headlines", function (req, res) {
-//   db.Headline.find({})
-//     .then(function (dbHeadline) {
-//       res.json(dbHeadline);
-//     })
-//     .catch(function (err) {
-//       res.json(err);
-//     });
-// });
+app.get("/headlines", function (req, res) {
+  db.Headline.find({})
+    .then(function (dbHeadline) {
+      res.json(dbHeadline);
+    })
+    .catch(function (err) {
+      res.json(err);
+    });
+});
 
 app.get("/headlines", function (req, res) {
   db.Headline.find({})
