@@ -8,7 +8,7 @@ $(document).ready(function () {
 
     function initPage() {
         articleContainer.empty();
-        $.get("/headlines?saved=false").then(function (data) {
+        $.get("/headlines").then(function (data) {
             if (data && data.length) {
                 renderArticles(data);
             }
@@ -77,7 +77,7 @@ $(document).ready(function () {
         console.log(articleToSave)
         $.ajax({
             method: "PUT",
-            url: "/headlines/:id" + articleToSave._id,
+            url: "/headlines/" + articleToSave._id,
             data: articleToSave
         }).then(function (data) {
 
@@ -95,9 +95,14 @@ $(document).ready(function () {
     }
 
     function handleArticleClear() {
-        $.get("/clear").then(function () {
-            articleContainer.empty();
-            initPage();
+        $.ajax({
+            url: "/headlines/" + articleContainer._id,
+            type: 'DELETE',
+            success: function (response) {
+                articleContainer.empty();
+                initPage();
+            }
         });
+
     }
 });

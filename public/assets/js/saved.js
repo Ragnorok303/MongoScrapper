@@ -10,12 +10,12 @@ $(document).ready(function () {
     function initPage() {
 
         articleContainer.empty();
-        $.get("/headlines?saved=true").then(function (data) {
+        $.get("/headlines/saved").then(function (data) {
             if (data && data.length) {
                 savedArticles(data);
             }
             else {
-                renderEmpty();
+                savedEmpty();
             }
         });
     }
@@ -54,7 +54,7 @@ $(document).ready(function () {
         return panel;
     }
 
-    function renderEmpty() {
+    function savedEmpty() {
 
         var emptyAlert = $(
             [
@@ -103,7 +103,7 @@ $(document).ready(function () {
         var articleToDelete = $(this).parents(".panel").data();
         $.ajax({
             method: "DELETE",
-            url: "/headlines" + articleToDelete._id
+            url: "/headlines/" + articleToDelete._id,
         }).then(function (data) {
             if (data.ok) {
                 initPage();

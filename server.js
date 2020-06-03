@@ -44,6 +44,8 @@ app.get("/scrape", function (req, res) {
       result.summary = $(this)
         .find("p")
         .text();
+      result.saved = $(this)
+        .saved = false;
 
       db.Headline.create(result)
         .then(function (dbHeadline) {
@@ -68,19 +70,20 @@ app.get("/saved", function (req, res) {
 });
 
 app.get("/headlines", function (req, res) {
-  db.Headline.find({})
-    .then(function (dbHeadline) {
-      res.json(dbHeadline);
-    })
-    .catch(function (err) {
-      res.json(err);
-    });
+  console.log("the params are", req.params),
+    db.Headline.find({})
+      .then(function (dbHeadline) {
+        res.send(dbHeadline);
+      })
+      .catch(function (err) {
+        res.json(err);
+      });
 });
 
-app.get("/headlines", function (req, res) {
-  db.Headline.find({})
-    .then(function (dbHeadline) {
-      res.send(dbHeadline);
+app.get("/headlines/saved", function (req, res) {
+  db.Headline.find({ saved: true })
+    .then(function (data) {
+      res.json(data);
     })
     .catch(function (err) {
       res.json(err);
@@ -109,20 +112,28 @@ app.post("/headlines/:id", function (req, res) {
 });
 
 app.put("/headlines/:id", function (req, res) {
-  db.Headline.update()
-    .then(dbHeadline => db.headline.findOneAndUpdate(
-      { _id: req.params.id }, { $set: { saved: true } })
-      .then(dbHeadline => res.json(dbHeadline))
-      .catch(err => res.json(500, err)));
+  db.Headline.findOneAndUpdate({ _id: req.params.id }, { saved: true })
+    .then(function (data) {
+      res.send(data);
+    })
+    .catch(function (err) {
+      res.json(err);
+    });;
 });
 
-app.delete("/clear", function (req, res) {
-  db.Headline.drop({})
-  .then(function (dbHeadline) {
-    res.send(dbHeadline);
-  })
-  .catch(function (err) {
-    res.json(err);
+app.delete("/clear/unsaved", function (req, res) {
+  db.Headline.deleteMany({saved:false},function (err, obj) {
+    if (err) throw err;
+    console.log(obj.result + " document(s) deleted");
+
+  });
+});
+
+app.delete("/headlines/:id", function (req, res) {
+  db.Headline.deleteMany({saved:true},function (err, obj) {
+    if (err) throw err;
+    console.log(obj.result + " document(s) deleted");
+    // db.close();
   });
 });
 
