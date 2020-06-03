@@ -2,6 +2,7 @@ $(document).ready(function () {
     var articleContainer = $(".article-container");
     $(document).on("click", ".btn.save", handleArticleSave);
     $(document).on("click", ".scrape-new", handleArticleScrape);
+    $(".clear").on("click", handleArticleClear);
 
     initPage();
 
@@ -76,7 +77,7 @@ $(document).ready(function () {
         console.log(articleToSave)
         $.ajax({
             method: "PUT",
-            url: "/headlines/:id"+ articleToSave._id,
+            url: "/headlines/:id" + articleToSave._id,
             data: articleToSave
         }).then(function (data) {
 
@@ -93,11 +94,10 @@ $(document).ready(function () {
         });
     }
 
-    // $.getJSON("/headlines", function (data) {
-    //     // For each one
-    //     for (var i = 0; i < data.length; i++) {
-    //         // Display the apropos information on the page
-    //         $("#article-container").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
-    //     }
-    // });
+    function handleArticleClear() {
+        $.get("/clear").then(function () {
+            articleContainer.empty();
+            initPage();
+        });
+    }
 });

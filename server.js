@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static("public"));
 
-mongoose.connect( process.env.MONGODB_URI ||"mongodb://localhost/Headline", { useNewUrlParser: true});
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/Headline", { useNewUrlParser: true });
 console.log("mongoose connection is successful");
 
 app.engine("handlebars", expressHandlebars({ defaultLayout: "main" }));
@@ -98,14 +98,14 @@ app.get("/headlines/:id", function (req, res) {
     });
 });
 
-app.post("/headlines/:id", function(req, res) {
+app.post("/headlines/:id", function (req, res) {
   db.Note.create(req.body)
-    .then( dbNote => db.Headline.findOneAndUpdate(
-            {_id:req.params.id},
-            {$push:{note:dbNote._id}})    
+    .then(dbNote => db.Headline.findOneAndUpdate(
+      { _id: req.params.id },
+      { $push: { note: dbNote._id } })
     )
     .then(dbHeadline => res.json(dbHeadline))
-    .catch( err => res.json(500, err))  
+    .catch(err => res.json(500, err))
 });
 
 app.put("/headlines/:id", function (req, res) {
@@ -114,6 +114,16 @@ app.put("/headlines/:id", function (req, res) {
       { _id: req.params.id }, { $set: { saved: true } })
       .then(dbHeadline => res.json(dbHeadline))
       .catch(err => res.json(500, err)));
+});
+
+app.delete("/clear", function (req, res) {
+  db.Headline.drop({})
+  .then(function (dbHeadline) {
+    res.send(dbHeadline);
+  })
+  .catch(function (err) {
+    res.json(err);
+  });
 });
 
 app.listen(PORT, function () {
