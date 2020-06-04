@@ -31,8 +31,10 @@ app.get("/scrape", function (req, res) {
   axios.get("https://www.nytimes.com").then(function (response) {
 
     var $ = cheerio.load(response.data);
+    var count = 0
 
     $("article").each(function (i, element) {
+      count++
 
       var result = {};
 
@@ -55,7 +57,7 @@ app.get("/scrape", function (req, res) {
           console.log(err);
         });
     });
-    res.send("Scrape Complete");
+    res.json({count:count});
   });
 });
 
@@ -121,19 +123,19 @@ app.put("/headlines/:id", function (req, res) {
     });;
 });
 
-app.delete("/clear/unsaved", function (req, res) {
+app.delete("/headlines/:id", function (req, res) {
   db.Headline.deleteMany({saved:false},function (err, obj) {
     if (err) throw err;
-    console.log(obj.result + " document(s) deleted");
-
+    console.log(obj.result + " this is being deleted");
+    res.send();
   });
 });
 
-app.delete("/headlines/:id", function (req, res) {
+app.delete("/headlines/saved", function (req, res) {
   db.Headline.deleteMany({saved:true},function (err, obj) {
     if (err) throw err;
     console.log(obj.result + " document(s) deleted");
-    // db.close();
+    res.send();
   });
 });
 

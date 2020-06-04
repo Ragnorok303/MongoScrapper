@@ -16,6 +16,7 @@ $(document).ready(function () {
                 renderEmpty();
             }
         });
+        console.log("init page")
     }
 
     function renderArticles(articles) {
@@ -24,7 +25,7 @@ $(document).ready(function () {
             articlePanels.push(createPanel(articles[i]));
         }
         articleContainer.append(articlePanels);
-        console.log()
+        console.log("render articles"+ articles.length)
     }
 
     function createPanel(article) {
@@ -88,20 +89,27 @@ $(document).ready(function () {
     }
 
     function handleArticleScrape() {
-        $.getJSON("/scrape").then(function (data) {
+        $.get("/scrape").then(function (data) {
+            console.log("scraped")
             initPage();
-            bootbox.alert("<h3 class='text-center m-top-80'>" + data.message + "<h3>");
+            bootbox.alert("<h3 class='text-center m-top-80'>" + data.count + "<h3>");
         });
     }
 
     function handleArticleClear() {
+        console.log("clear artilces")
         $.ajax({
             url: "/headlines/" + articleContainer._id,
             type: 'DELETE',
             success: function (response) {
+                console.log("return empty")
                 articleContainer.empty();
                 initPage();
-            }
+            },
+            error:function (err){
+                console.log("we have a problem", err)
+            },
+            
         });
 
     }

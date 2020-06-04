@@ -103,7 +103,7 @@ $(document).ready(function () {
         var articleToDelete = $(this).parents(".panel").data();
         $.ajax({
             method: "DELETE",
-            url: "/headlines/" + articleToDelete._id,
+            url: "/headlines/saved" + articleToDelete._id,
         }).then(function (data) {
             if (data.ok) {
                 initPage();
